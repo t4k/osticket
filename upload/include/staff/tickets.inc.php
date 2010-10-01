@@ -1,7 +1,32 @@
+<script type="text/javascript">
+function changeAssignee(ticketID)
+{
+	var obj = "staff_select"+ticketID;
+	var sel = document.getElementById(obj);
+	var assignee = sel.options[sel.selectedIndex].value;
+ 
+	var url = "index.php?update=staff&staffid="+assignee+"&ticket_id="+ticketID;
+ 
+	window.location.href = url;
+}
+</script>
 <?php
 if(!defined('OSTSCPINC') || !@$thisuser->isStaff()) die('Access Denied');
 
 //Get ready for some deep shit..(I admit..this could be done better...but the shit just works... so shutup for now).
+
+
+
+// modifications to this file based on http://www.openscriptsolution.com/2009/11/12/assign-staff-from-ticket-list-in-osticket-v1-6-rc5/
+// assign the user from the drop down list if one has been selected
+if(isset($_GET['update']) && $_GET['update'] == "staff")
+{
+    $thisStaff = $_GET['staffid'];
+    $ticketToUpdate = $_GET['ticket_id'];
+    $tt = new Ticket($ticketToUpdate);
+    $staffMessage = "You have been assigned a ticket.";
+    $tt->assignStaff($thisStaff,$staffMessage);
+}
 
 $qstr='&'; //Query string collector
 if($_REQUEST['status']) { //Query string status has nothing to do with the real status used below; gets overloaded.
@@ -179,7 +204,11 @@ if($search):
 endif;
 
 //I admit this crap sucks...but who cares??
-$sortOptions=array('date'=>'ticket.created','ID'=>'ticketID','pri'=>'priority_urgency','dept'=>'dept_name');
+
+// modified
+//$sortOptions=array('date'=>'ticket.created','ID'=>'ticketID','pri'=>'priority_urgency','dept'=>'dept_name');
+
+$sortOptions=array('date'=>'ticket.created','ID'=>'ticketID','pri'=>'priority_urgency','dept'=>'dept_name','staf'=>'staff_id');
 $orderWays=array('DESC'=>'DESC','ASC'=>'ASC');
 
 //Sorting options...
@@ -394,11 +423,15 @@ $basic_display=!isset($_REQUEST['advance_search'])?true:false;
 	        <th width="70">
                 <a href="tickets.php?sort=date&order=<?=$negorder?><?=$qstr?>" title="Sort By Date <?=$negorder?>">Date</a></th>
 	        <th width="280">Subject</th>
-	        <th width="120">
-                <a href="tickets.php?sort=dept&order=<?=$negorder?><?=$qstr?>" title="Sort By Category <?=$negorder?>">Department</a></th>
+	        <!--th width="120">
+                <a href="tickets.php?sort=dept&order=<?=$negorder?><?=$qstr?>" title="Sort By Category <?=$negorder?>">Department</a></th-->
 	        <th width="70">
                 <a href="tickets.php?sort=pri&order=<?=$negorder?><?=$qstr?>" title="Sort By Priority <?=$negorder?>">Priority</a></th>
             <th width="180" >From</th>
+<!-- modified -->
+            <th width="120" >
+                <a href="tickets.php?sort=staf&order=<?=$negorder?><?=$qstr?>" title="Sort By Assign... <?=$negorder?>">Assign...</a></th>
+<!-- /modified -->
         </tr>
         <?
         $class = "row1";
@@ -434,9 +467,23 @@ $basic_display=!isset($_REQUEST['advance_search'])?true:false;
                 <td><a <?if($flag) { ?> class="Icon <?=$flag?>Ticket" title="<?=ucfirst($flag)?> Ticket" <?}?> 
                     href="tickets.php?id=<?=$row['ticket_id']?>"><?=$subject?></a>
                     &nbsp;<?=$row['attachments']?"<span class='Icon file'>&nbsp;</span>":''?></td>
-                <td nowrap><?=Format::truncate($row['dept_name'],30)?></td>
+                <!--td nowrap><?=Format::truncate($row['dept_name'],30)?></td-->
                 <td class="nohover" align="center" style="background-color:<?=$row['priority_color']?>;"><?=$row['priority_desc']?></td>
                 <td nowrap><?=Format::truncate($row['name'],22,strpos($row['name'],'@'))?>&nbsp;</td>
+<!-- modified -->
+                <td nowrap>
+                  <!-- staff select added by me -->
+                  <?php
+                  $thisTicket = new Ticket($row['ticket_id']);
+                  ?>                    
+                  <select id="staff_select<? echo $row['ticket_id'];?>" onchange="changeAssignee(<? echo $row['ticket_id'] ?>);">
+                   <option <?if($row['staff_id'] == 0){?>SELECTED<?}?> value="0">Assign...</option>
+                   <?php
+                     $possibleAssignees = $thisTicket->getPossibleAssignees($row['staff_id']);
+                   ?>
+                 </select>
+                </td>                
+<!-- /modified -->
             </tr>
             <?
             $class = ($class =='row2') ?'row1':'row2';

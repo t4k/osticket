@@ -1556,6 +1556,25 @@ class Ticket{
             }
         }
    }
-    
+
+// modified so administrator is not on list
+  function getPossibleAssignees($currentStaffID) {
+     $sql = "SELECT staff_id, firstname FROM ".STAFF_TABLE." ORDER BY firstname";
+     $query = db_query($sql);
+     while($row = db_fetch_array($query)) {
+       $id = $row['staff_id'];
+       $name = $row['firstname'];
+       if ($id > 1) {
+         if($currentStaffID == $id) {
+           $option = "<option value=\"".$id."\" SELECTED>".$name."</option>";               
+         }
+         else {
+           $option = "<option value=\"".$id."\">".$name."</option>";           
+         }
+         echo $option;
+       }
+     }
+  }  
+
 }
 ?>
