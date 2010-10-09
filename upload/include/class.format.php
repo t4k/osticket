@@ -91,7 +91,7 @@ class Format {
     }
 
     function striptags($string) {
-        return strip_tags(html_entity_decode($string)); //strip all tags ...no mercy!
+        return html_entity_decode($string);
     }
 
     //make urls clickable. Mainly for display 
