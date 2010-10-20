@@ -245,5 +245,30 @@ function strcmp(){
     return false;
 }
 
+var regExp = /<\/?[^>]+>/gi;
+function ReplaceTags(xStr){
+      	xStr = xStr.replace(/<BR.*\/>/gi,"\n");
+        xStr = xStr.replace(regExp,"");
+        xStr = xStr.replace(/&gt;/gi,">");
+        xStr = xStr.replace(/&lt;/gi,"<"); 
+        xStr = xStr.replace(/&nbsp;/gi," ");
+        xStr = xStr.replace(/\n/gi,"\n> ");
+        return "> "+xStr;
+}
 
+function quoteMsg(msgID,fieldName,userName,time)
+{
+        //Akon - what's an akon?  Eddie rocks.
+	if (! msgID) {return false}
+	if (! fieldName){return false}
+	if (document.getElementById){
+	var fixedContent = ReplaceTags(document.getElementById(msgID).innerHTML);
 
+		fieldName.value+="On "+time+", '"+userName+"' wrote: \n\n"+fixedContent;
+	} else if (document.all){
+	var fixedContent = ReplaceTags(document.all[msgID].innerHTML);
+		fieldName.value+="On "+time+", '"+userName+"' wrote: \n\n"+fixedContent;
+	}
+	fieldName.value+="\n\n";
+	return false;
+}

@@ -236,13 +236,13 @@ if(($resp=db_query($sql)) && ($notes=db_num_rows($resp))){
 	    $msgres =db_query($sql);
 	    while ($msg_row = db_fetch_array($msgres)) {
 		    ?>
-		    <table align="center" class="message" cellspacing="0" cellpadding="1" width="100%" border=0>
-		        <tr><th><?=Format::db_daydatetime($msg_row['created'])?></th></tr>
+            <table align="center" class="message" cellspacing="0" cellpadding="1" width="100%">
+                <tr><th><?=Format::db_daydatetime($msg_row['created'])?></th><th style="text-align:right"><a href="#reply" onClick="quoteMsg('<?=$msg_row['msg_id']?>',document.reply.response,'<?echo $ticket->getName();?>','<?=Format::db_daydatetime($msg_row['created'])?>');">Quote In Your Reply</a></th></tr>
                 <?if($msg_row['attachments']>0){ ?>
-                <tr class="header"><td><?=$ticket->getAttachmentStr($msg_row['msg_id'],'M')?></td></tr> 
+                <tr class="header"><td colspan="2"><?=$ticket->getAttachmentStr($msg_row['msg_id'],'M')?></td></tr>
                 <?}?>
-                <tr><td><?=Format::display($msg_row['message'])?>&nbsp;</td></tr>
-		    </table>
+                <tr><td colspan="2" id="<?=$msg_row['msg_id']?>"><?=Format::display($msg_row['message'])?>&nbsp;</td></tr>
+            </table>
             <?
             //get answers for messages
             $sql='SELECT resp.*,count(attach_id) as attachments FROM '.TICKET_RESPONSE_TABLE.' resp '.
