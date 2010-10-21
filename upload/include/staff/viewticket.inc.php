@@ -347,7 +347,7 @@ if(($resp=db_query($sql)) && ($notes=db_num_rows($resp))){
                     </form>                
                 </p>
             </div>
-            <div id="notes" class="tabbertab"  align="left">
+            <div id="notes" class="tabbertab tabbertabdefault"  align="left">
                 <h2>Post Internal Note</h2>
                 <p>
                     <form action="tickets.php?id=<?=$id?>#notes" name="notes" class="inline" method="post" enctype="multipart/form-data">
