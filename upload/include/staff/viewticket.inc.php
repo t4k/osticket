@@ -254,13 +254,14 @@ if(($resp=db_query($sql)) && ($notes=db_num_rows($resp))){
                 $respID=$resp_row['response_id'];
                 ?>
     		    <table align="center" class="response" cellspacing="0" cellpadding="1" width="100%" border=0>
-    		        <tr><th><?=Format::db_daydatetime($resp_row['created'])?>&nbsp;-&nbsp;<?=$resp_row['staff_name']?></th></tr>
-                    <?if($resp_row['attachments']>0){ ?>
-                    <tr class="header">
-                        <td><?=$ticket->getAttachmentStr($respID,'R')?></td></tr>
-                    <?}?>
-			        <tr><td> <?=Format::display($resp_row['response'])?></td></tr>
-		        </table>
+              <tr><th><?=Format::db_daydatetime($resp_row['created'])?>&nbsp;-&nbsp;<?=$resp_row['staff_name']?></th>
+              <th style="text-align:right"><a href="#reply" onClick="quoteMsg('<?=$respID?>',document.reply.response,'<?=$resp_row['staff_name']?>','<?=Format::db_daydatetime($resp_row['created'])?>');">Quote In Your Reply</a></th></tr>
+<?if($resp_row['attachments']>0){ ?>
+                  <tr class="header">
+                      <td><?=$ticket->getAttachmentStr($respID,'R')?></td></tr>
+<?}?>
+                  <tr><td colspan="2" id="<?=$respID?>"><?=Format::display($resp_row['response'])?></td></tr>
+            </table>
 	        <?}
             $msgid =$msg_row['msg_id'];
 	    }?>
